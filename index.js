@@ -10,7 +10,9 @@ app.use('/users', usersRouter) // tudo que começa com /users vai para o router 
 
 // Middleware global de erro: o "plano B" de qualquer next(err)
 app.use((err, req, res, next) => {
-  res.status(500).json({ erro: err.message })
+  const status = err.status ?? 500
+  res.status(status).json({ erro: err.message })
 })
+
 
 app.listen(3000)
