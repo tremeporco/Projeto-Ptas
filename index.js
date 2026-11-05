@@ -1,20 +1,16 @@
-import express from "express";
-import conectarBanco from "./db.js";
+// src/server.js
+// Só monta o app: middlewares globais, routers e middleware de erro.
+import express from 'express'
+import usersRouter from './routes/users.routes.js'
 
-const app = express();
+const app = express()
 
-app.use(express.json());
+app.use(express.json()) // traduz o corpo JSON da requisição
+app.use('/users', usersRouter) // tudo que começa com /users vai para o router de users
 
-conectarBanco();
+// Middleware global de erro: o "plano B" de qualquer next(err)
+app.use((err, req, res, next) => {
+  res.status(500).json({ erro: err.message })
+})
 
-app.get("/", (req, res) => {
-    res.status(200).json({
-        mensagem: "API MoviLar funcionando!"
-    });
-});
-
-const PORT = 3000;
-
-app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
-});
+app.listen(3000)
