@@ -1,4 +1,4 @@
-function logger(req, res, next) {
+export default function logger(req, res, next) {
   const inicio = Date.now()
 
   // 'finish' dispara quando a resposta já foi enviada ao cliente
@@ -10,4 +10,3 @@ function logger(req, res, next) {
   next() // o fluxo segue IMEDIATAMENTE, sem esperar o log
 }
 
-app.use(logger)

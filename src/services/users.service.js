@@ -3,6 +3,10 @@
 import { usersModel } from '../models/users.model.js'
 
 export const usersService = {
+async listUsers() {
+  return usersModel.findAll()
+},
+
   async createUser(data) {
     const emailJaExiste = (await usersModel.findAll())
       .some(u => u.email === data.email)
