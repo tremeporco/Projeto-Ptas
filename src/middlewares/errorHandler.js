@@ -1,17 +1,9 @@
-const { z } = require("zod");
+// deve ser o ÚLTIMO app.use do arquivo
+function errorHandler(err, req, res, next) {
+  console.error(err.stack) // o rastro completo vai para o terminal (log do dev)
 
-function errorHandler(error, req, res, next) {
-
-    if (error instanceof z.ZodError) {
-        return res.status(400).json({
-            erro: "Dados inválidos",
-            detalhes: error.issues
-        });
-    }
-
-    res.status(error.status || 500).json({
-        erro: error.message || "Erro interno"
-    });
+  const status = err.status || 500
+  res.status(status).json({ erro: err.message || 'Erro interno' })
 }
 
-module.exports = errorHandler;
+app.use(errorHandler)
