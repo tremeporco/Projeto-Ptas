@@ -15,4 +15,7 @@ export const usersService = {
 
     return usersModel.create(data)
   },
+async getUser(id) {
+    return usersModel.findById(id)
+  },
 }
