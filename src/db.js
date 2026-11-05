@@ -12,7 +12,7 @@ export async function readUsers() {
     const raw = await readFile(DB_PATH, 'utf8')
     return JSON.parse(raw)
   } catch (err) {
-    if (err.code === 'ENOENT') return []   // arquivo não existe ainda
+    if (err.code === 'ENOENT') return []   // araquivo não existe ainda
     throw err                              // outro erro: propaga
   }
   
