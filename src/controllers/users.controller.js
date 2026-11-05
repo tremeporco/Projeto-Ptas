@@ -1,7 +1,6 @@
 // src/controllers/users.controller.js
 
 // Coordena: recebe a requisição, chama o model e monta a resposta HTTP.
-import { usersModel } from '../models/users.model.js'
 import { usersService } from '../services/users.service.js'
 
 export async function createUser(req, res, next) {
@@ -15,10 +14,12 @@ export async function createUser(req, res, next) {
 
 export async function getUser(req, res, next) {
   try {
-    const user = await usersModel.findById(Number(req.params.id))
+    const user = await usersService.getUser(Number(req.params.id))
     if (!user) {
-      return res.status(404).json({ erro: 'não encontrado' })
-    }
+  const erro = new Error('Usuário não encontrado')
+  erro.status = 404
+  throw erro
+}
     res.json(user)
   } catch (err) {
     next(err)
@@ -27,14 +28,11 @@ export async function getUser(req, res, next) {
 
 
 
-export async function deleteUser(req, res) {
-  const id = Number(req.params.id)
-  const users = await readUsers()
-  const user = users.find(u => u.id === id)
-  if (!user) return res.status(404).json({ erro: 'Usuário não encontrado' })
-  if (user.deletedAt) return res.status(409).json({ erro: 'Já removido' })
-
-  user.deletedAt = new Date().toISOString()  // marca remoção
-  await writeUsers(users)
-  res.status(204).end()
-})
+export async function deleteUser(req, res, next) {
+  try {
+    await usersService.deleteUser(Number(req.params.id))
+    res.status(204).end()
+  } catch (err) {
+    next(err)
+  }
+}

@@ -18,4 +18,7 @@ export const usersService = {
 async getUser(id) {
     return usersModel.findById(id)
   },
+ async deleteUser(id) {
+  return usersModel.delete(id)
+}
 }

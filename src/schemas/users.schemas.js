@@ -1,9 +1,7 @@
-const { z } = require("zod");
+import { z } from 'zod'
 
-const alunoSchema = z.object({
-    nome: z.string().min(3, "Nome muito curto"),
-
-    email: z.string().email("E-mail inválido")
-});
-
-module.exports = alunoSchema;
+export const userSchema = z.object({
+  nome: z.string().min(3, 'Nome muito curto'),
+  email: z.string().email('E-mail inválido'),
+  senha: z.string().min(6, 'Senha muito curta')
+})
