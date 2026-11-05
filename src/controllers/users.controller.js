@@ -3,6 +3,16 @@
 // Coordena: recebe a requisição, chama o model e monta a resposta HTTP.
 import { usersService } from '../services/users.service.js'
 
+
+export async function listUsers(req, res, next) {
+  try {
+    const users = await usersService.listUsers()
+    res.json(users)
+  } catch (err) {
+    next(err)
+  }
+}
+
 export async function createUser(req, res, next) {
   try {
     const novo = await usersService.createUser(req.body)
@@ -15,11 +25,13 @@ export async function createUser(req, res, next) {
 export async function getUser(req, res, next) {
   try {
     const user = await usersService.getUser(Number(req.params.id))
+
     if (!user) {
-  const erro = new Error('Usuário não encontrado')
-  erro.status = 404
-  throw erro
-}
+      const erro = new Error('Usuário não encontrado')
+      erro.status = 404
+      throw erro
+    }
+
     res.json(user)
   } catch (err) {
     next(err)
@@ -27,11 +39,61 @@ export async function getUser(req, res, next) {
 }
 
 
-
 export async function deleteUser(req, res, next) {
   try {
     await usersService.deleteUser(Number(req.params.id))
     res.status(204).end()
+  } catch (err) {
+    next(err)
+  }
+}
+
+
+app.put('/users/:id', async (req, res) => {
+  // 1. params vem SEMPRE como string → converter para number
+  const id = Number(req.params.id)
+  
+  // 2. PUT exige TODOS os campos obrigatórios no body
+  const { nome, email } = req.body || {}
+
+  if (!nome || !email) {
+    return res.status(400).json({ 
+      erro: 'nome e email são obrigatórios para PUT (substituição completa)' 
+    })
+  }
+
+  // 3. Busca o índice (não o objeto) para poder substituir no array
+  const users = await readUsers()
+  const idx = users.findIndex(u => u.id === id)
+  if (idx === -1) return res.status(404).json({ erro: 'Usuário não encontrado' })
+
+  // 4. SUBSTITUI o objeto inteiro — mantém id da URL, descarta o do body
+  users[idx] = { id, nome, email }
+  
+  // 5. Persiste e responde com recurso atualizado
+  await writeUsers(users)
+  res.json(users[idx])  // 200 OK
+})
+
+export async function updateUser(req, res, next) {
+  try {
+    const user = await usersService.updateUser(
+      Number(req.params.id),
+      req.body
+    )
+    res.json(user)
+  } catch (err) {
+    next(err)
+  }
+}
+
+export async function patchUser(req, res, next) {
+  try {
+    const user = await usersService.patchUser(
+      Number(req.params.id),
+      req.body
+    )
+    res.json(user)
   } catch (err) {
     next(err)
   }
