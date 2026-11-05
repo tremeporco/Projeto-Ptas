@@ -20,15 +20,44 @@ export const usersService = {
     return usersModel.findById(id)
   },
 
+//quase que esqueço de  de verificar quando um user não existe, para não dar erro 500, mas sim 404
+// async deleteUser(id) {
+//    return usersModel.delete(id)
+//},
+//tava desse jeito
+
   async deleteUser(id) {
-    return usersModel.delete(id)
-  },
+  const user = await usersModel.delete(id)
 
-  async updateUser(id, data) {
-    return usersModel.update(id, data)
-  },
-
-  async patchUser(id, data) {
-    return usersModel.patch(id, data)
+  if (!user) {
+    const erro = new Error('Usuário não encontrado')
+    erro.status = 404
+    throw erro
   }
-}
+
+  return user
+},
+
+async updateUser(id, data) {
+  const user = await usersModel.update(id, data)
+
+  if (!user) {
+    const erro = new Error('Usuário não encontrado')
+    erro.status = 404
+    throw erro
+  }
+
+  return user
+},
+
+async patchUser(id, data) {
+  const user = await usersModel.patch(id, data)
+
+  if (!user) {
+    const erro = new Error('Usuário não encontrado')
+    erro.status = 404
+    throw erro
+  }
+
+  return user
+}}
