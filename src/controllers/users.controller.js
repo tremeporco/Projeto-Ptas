@@ -1,8 +1,10 @@
 // src/controllers/users.controller.js
 
 // Coordena: recebe a requisição, chama o model e monta a resposta HTTP.
-import { usersService } from '../services/users.service.js'
+// src/controllers/users.controller.js
 
+// Coordena: recebe a requisição, chama o model e monta a resposta HTTP.
+import { usersService } from '../services/users.service.js'
 
 export async function listUsers(req, res, next) {
   try {
@@ -24,7 +26,7 @@ export async function createUser(req, res, next) {
 
 export async function getUser(req, res, next) {
   try {
-    const user = await usersService.getUser(Number(req.params.id))
+    const user = await usersService.getUser(req.params.id)
 
     if (!user) {
       const erro = new Error('Usuário não encontrado')
@@ -38,10 +40,9 @@ export async function getUser(req, res, next) {
   }
 }
 
-
 export async function deleteUser(req, res, next) {
   try {
-    await usersService.deleteUser(Number(req.params.id))
+    await usersService.deleteUser(req.params.id)
     res.status(204).end()
   } catch (err) {
     next(err)
@@ -51,7 +52,7 @@ export async function deleteUser(req, res, next) {
 export async function updateUser(req, res, next) {
   try {
     const user = await usersService.updateUser(
-      Number(req.params.id),
+      req.params.id,
       req.body
     )
     res.json(user)
@@ -63,7 +64,7 @@ export async function updateUser(req, res, next) {
 export async function patchUser(req, res, next) {
   try {
     const user = await usersService.patchUser(
-      Number(req.params.id),
+      req.params.id,
       req.body
     )
     res.json(user)

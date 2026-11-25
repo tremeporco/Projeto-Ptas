@@ -1,55 +1,62 @@
-import { readUsers, writeUsers } from '../db.js'
+import { PrismaClient } from '../generated/prisma/client.js'
+
+const prisma = new PrismaClient()
 
 export const usersModel = {
   async findAll() {
-    return (await readUsers()).filter(u => !u.deletedAt)
+    return prisma.user.findMany({
+      where: { deletedAt: null }
+    })
   },
 
   async findById(id) {
-    const user = (await readUsers()).find(
-      x => x.id === id && !x.deletedAt
-    )
-    return user || null
+    return prisma.user.findFirst({
+      where: { id, deletedAt: null }
+    })
   },
 
   async create(data) {
-    const users = await readUsers()
-    const id = users.length ? Math.max(...users.map(u => u.id)) + 1 : 1
-    const novo = { id, ...data, deletedAt: null }
-    users.push(novo)
-    await writeUsers(users)
-    return novo
+    return prisma.user.create({
+      data
+    })
   },
 
   async delete(id) {
-    const users = await readUsers()
-   const user = users.find(u => u.id === id && !u.deletedAt)
-  if (!user) return null
-  user.deletedAt = new Date().toISOString()
-    await writeUsers(users)
-    return user
+    const user = await prisma.user.findFirst({
+      where: { id, deletedAt: null }
+    })
+
+    if (!user) return null
+
+    return prisma.user.update({
+      where: { id },
+      data: { deletedAt: new Date() }
+    })
   },
 
   async update(id, data) {
-    const users = await readUsers()
-  const index = users.findIndex(u => u.id === id && !u.deletedAt)
-    if (index === -1) return null
-    users[index] = {
-      id,
-     nome: data.nome,
-      email: data.email,
-    senha: data.senha,
-      deletedAt: null }
-    await writeUsers(users)
-    return users[index] },
+    const user = await prisma.user.findFirst({
+      where: { id, deletedAt: null }
+    })
+
+    if (!user) return null
+
+    return prisma.user.update({
+      where: { id },
+      data
+    })
+  },
 
   async patch(id, data) {
-    const users = await readUsers()
-    const user = users.find(u => u.id === id && !u.deletedAt)
-  if (!user) return null
-    const { id: _, deletedAt: __, ...dadosPermitidos } = data
-    Object.assign(user, dadosPermitidos)
-    await writeUsers(users)
-    return user
+    const user = await prisma.user.findFirst({
+      where: { id, deletedAt: null }
+    })
+
+    if (!user) return null
+
+    return prisma.user.update({
+      where: { id },
+      data
+    })
   }
 }
