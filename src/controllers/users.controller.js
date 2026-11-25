@@ -4,12 +4,22 @@
 // src/controllers/users.controller.js
 
 // Coordena: recebe a requisição, chama o model e monta a resposta HTTP.
-import { usersService } from '../services/users.service.js'
 
+// src/controllers/users.controller.js
+// Coordena: recebe a requisição, chama o model e monta a resposta HTTP.
+import { usersService } from '../services/users.service.js'
+import { userDTO } from '../dtos/user.dto.js'
 export async function listUsers(req, res, next) {
   try {
-    const users = await usersService.listUsers()
-    res.json(users)
+    const page = Number(req.query.page) || 1
+    const limit = Number(req.query.limit) || 10
+
+    const resultado = await usersService.listUsers(page, limit)
+
+    res.json({
+      data: resultado.data.map(userDTO),
+      meta: resultado.meta
+    })
   } catch (err) {
     next(err)
   }
@@ -18,7 +28,7 @@ export async function listUsers(req, res, next) {
 export async function createUser(req, res, next) {
   try {
     const novo = await usersService.createUser(req.body)
-    res.status(201).json(novo)
+    res.status(201).json(userDTO(novo))
   } catch (err) {
     next(err)
   }
@@ -34,7 +44,7 @@ export async function getUser(req, res, next) {
       throw erro
     }
 
-    res.json(user)
+    res.json(userDTO(user))
   } catch (err) {
     next(err)
   }
@@ -55,7 +65,7 @@ export async function updateUser(req, res, next) {
       req.params.id,
       req.body
     )
-    res.json(user)
+    res.json(userDTO(user))
   } catch (err) {
     next(err)
   }
@@ -67,8 +77,8 @@ export async function patchUser(req, res, next) {
       req.params.id,
       req.body
     )
-    res.json(user)
+    res.json(userDTO(user))
   } catch (err) {
     next(err)
   }
-}
+} 

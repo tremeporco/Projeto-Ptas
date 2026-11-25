@@ -1,12 +1,31 @@
-import { PrismaClient } from '../generated/prisma/client.js'
+import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
 export const usersModel = {
-  async findAll() {
-    return prisma.user.findMany({
-      where: { deletedAt: null }
-    })
+  async findAll(page, limit) {
+    const skip = (page - 1) * limit
+
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        where: { deletedAt: null },
+        skip,
+        take: limit
+      }),
+      prisma.user.count({
+        where: { deletedAt: null }
+      })
+    ])
+
+    return {
+      data: users,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
+      }
+    }
   },
 
   async findById(id) {
