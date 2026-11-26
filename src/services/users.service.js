@@ -1,14 +1,11 @@
 // src/services/users.service.js
 // Regras de negócio: aqui mora o que o SISTEMA decide.
-// src/services/users.service.js
-// Regras de negócio: aqui mora o que o SISTEMA decide.
-// src/services/users.service.js
-// Regras de negócio: aqui mora o que o SISTEMA decide.
+
 import { usersModel } from '../models/users.model.js'
 
 export const usersService = {
-async listUsers(page, limit) {
-  return usersModel.findAll(page, limit)
+async listUsers(page, limit, nome, sort, order) {
+  return usersModel.findAll(page, limit, nome, sort, order)
 },
 
   async createUser(data) {
@@ -33,9 +30,10 @@ async listUsers(page, limit) {
     const user = await usersModel.delete(id)
 
     if (!user) {
-      const erro = new Error('Usuário não encontrado')
-      erro.status = 404
-      throw erro
+    const erro = new Error('Usuário não encontrado')
+erro.status = 404
+erro.type = 'NOT_FOUND'
+throw erro
     }
 
     return user
@@ -45,9 +43,10 @@ async listUsers(page, limit) {
     const user = await usersModel.update(id, data)
 
     if (!user) {
-      const erro = new Error('Usuário não encontrado')
-      erro.status = 404
-      throw erro
+   const erro = new Error('Usuário não encontrado')
+erro.status = 404
+erro.type = 'NOT_FOUND'
+throw erro
     }
 
     return user
@@ -57,9 +56,10 @@ async listUsers(page, limit) {
     const user = await usersModel.patch(id, data)
 
     if (!user) {
-      const erro = new Error('Usuário não encontrado')
-      erro.status = 404
-      throw erro
+    const erro = new Error('Usuário não encontrado')
+erro.status = 404
+erro.type = 'NOT_FOUND'
+throw erro
     }
 
     return user

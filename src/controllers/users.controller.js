@@ -11,10 +11,22 @@ import { usersService } from '../services/users.service.js'
 import { userDTO } from '../dtos/user.dto.js'
 export async function listUsers(req, res, next) {
   try {
-    const page = Number(req.query.page) || 1
-    const limit = Number(req.query.limit) || 10
+    const page = Math.max(1, Number(req.query.page) || 1)
+    const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 10))
+    const nome = req.query.nome || ''
+    const sortPermitidos = ['nome', 'email', 'createdAt']
+    const sort = sortPermitidos.includes(req.query.sort)
+      ? req.query.sort
+      : 'nome'
+    const order = req.query.order === 'desc' ? 'desc' : 'asc'
 
-    const resultado = await usersService.listUsers(page, limit)
+    const resultado = await usersService.listUsers(
+      page,
+      limit,
+      nome,
+      sort,
+      order
+    )
 
     res.json({
       data: resultado.data.map(userDTO),

@@ -5,8 +5,12 @@ export function valida(schema) {
     const result = schema.safeParse(req.body)
 
     if (!result.success) {
-      // erro de FORMATO é culpa de quem enviou → 400, não 500
-      return res.status(400).json({ erro: z.flattenError(result.error) })
+      const erro = new Error('Dados inválidos')
+      erro.status = 400
+      erro.type = 'VALIDATION_ERROR'
+      erro.details = z.flattenError(result.error)
+
+      return next(erro)
     }
 
     req.body = result.data // corpo validado e saneado segue viagem

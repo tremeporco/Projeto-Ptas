@@ -16,9 +16,19 @@ app.use(logger)
 app.use('/api/v1/users', usersRouter) // tudo que começa com /api/v1/users vai para o router de users
 
 // Middleware global de erro: o "plano B" de qualquer next(err)
+// Middleware global de erro: o "plano B" de qualquer next(err)
 app.use((err, req, res, next) => {
   const status = err.status ?? 500
-  res.status(status).json({ erro: err.message || 'Erro interno' })
+
+  const tipos = {
+    400: 'VALIDATION_ERROR',    404: 'NOT_FOUND',   409: 'CONFLICT', 500: 'INTERNAL_ERROR'
+  }
+
+  res.status(status).json({
+    type: err.type ?? tipos[status] ?? 'ERROR',
+    message: status === 500 ? 'Erro interno do servidor' : err.message,
+    ...(err.details && { details: err.details })
+  })
 })
 
 app.listen(3000, () => {
