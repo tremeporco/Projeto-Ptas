@@ -4,8 +4,8 @@
 import { usersModel } from '../models/users.model.js'
 
 export const usersService = {
-async listUsers(page, limit, nome, sort, order) {
-  return usersModel.findAll(page, limit, nome, sort, order)
+async listUsers(page, limit, q, sort, order) {
+  return usersModel.findAll(page, limit, q, sort, order)
 },
 
   async createUser(data) {

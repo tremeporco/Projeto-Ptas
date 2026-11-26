@@ -10,10 +10,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
- "scripts": {
+"scripts": {
+  "start": "node src/index.js",
   "dev": "nodemon src/index.js",
   "seed": "node prisma/seed.js"
-}, 
+},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tremeporco/Projeto-Ptas.git"

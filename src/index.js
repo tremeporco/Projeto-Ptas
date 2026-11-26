@@ -31,6 +31,32 @@ app.use((err, req, res, next) => {
   })
 })
 
+
+app.use('/api/v1/users', usersRouter)
+
+app.get('/recuperacao', (req, res) => {
+  res.json({ programar: 'mudou minha vida' })
+})
+
+// Middleware global de erro: o "plano B" de qualquer next(err)
+app.use((err, req, res, next) => {
+  const status = err.status ?? 500
+
+  const tipos = {
+    400: 'VALIDATION_ERROR',
+    404: 'NOT_FOUND',
+    409: 'CONFLICT',
+    500: 'INTERNAL_ERROR'
+  }
+
+  res.status(status).json({
+    type: err.type ?? tipos[status] ?? 'ERROR',
+    message: status === 500 ? 'Erro interno do servidor' : err.message,
+    ...(err.details && { details: err.details })
+  })
+})
+
 app.listen(3000, () => {
   console.log('Servidor rodando na porta 3000')
 })
+
